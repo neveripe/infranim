@@ -71,7 +71,7 @@ manim -pql my_scene.py MyScene
 | TrafficFlow animation | ✅ |
 | ScaleOutAction (dynamic node spawning) | ✅ |
 | NodeCluster (logical grouping) | ✅ |
-| AWS provider icons (EC2, RDS, ALB, Route53, IGW) | ⚠️ Fallback circles until SVGs are bundled |
+| AWS provider icons (EC2, RDS, ALB, Route53, IGW) | ✅ |
 | Multi-provider support (GCP, Azure) | ❌ Planned |
 | Terraform/CloudFormation ingestion | ❌ Planned |
 
@@ -89,11 +89,13 @@ manim_devops/
 ├── layout.py        # OrthogonalRouter (L-bend pathfinding)
 ├── cinematics.py    # TrafficFlow, ScaleOutAction animations
 ├── adapter.py       # AnimatedDiagram (diagrams-style API)
+├── constants.py     # Central configuration constants
 └── assets/
-    ├── __init__.py  # CloudNode base class
-    └── aws.py       # EC2, RDS, ALB, Route53, IGW
+    ├── __init__.py  # GraphEntity, CloudNode base classes
+    ├── aws.py       # EC2, RDS, ALB, Route53, IGW
+    └── aws/         # Bundled SVG icons
 ```
 
 ## License
 
-MIT
+BSD 2-Clause — see [LICENSE](LICENSE).

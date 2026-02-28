@@ -7,7 +7,7 @@ name = "manim-devops"
 version = "0.1.0"
 description = "Animate your cloud infrastructure as code. Converts architecture topologies into cinematic Manim videos."
 readme = "README.md"
-license = {text = "MIT"}
+license = {text = "BSD-2-Clause"}
 requires-python = ">=3.10"
 dependencies = [
     "manim>=0.18.0",
