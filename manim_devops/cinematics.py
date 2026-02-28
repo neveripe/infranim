@@ -1,10 +1,10 @@
-from manim import Animation, Succession, AnimationGroup, MoveAlongPath, Indicate, Dot, FadeOut, GrowFromCenter, Create, VMobject
+from manim import Animation, Succession, AnimationGroup, MoveAlongPath, Indicate, Dot, FadeOut, GrowFromCenter, Create, VMobject, Text
 from manim_devops.core import DevopsScene, NodeCluster
 from manim_devops.assets import CloudNode
 from manim_devops.layout import OrthogonalRouter
 from manim_devops.constants import (
-    Z_PACKET, Z_EDGE, PACKET_RADIUS, PULSE_SCALE_FACTOR,
-    SCALE_OUT_NODE_RADIUS, EDGE_COLOR, DEFAULT_TRAFFIC_COLOR,
+    Z_PACKET, Z_EDGE, Z_NODE, PACKET_RADIUS, PULSE_SCALE_FACTOR,
+    SCALE_OUT_NODE_RADIUS, EDGE_COLOR, DEFAULT_TRAFFIC_COLOR, LABEL_FONT_SIZE,
 )
 
 def TrafficFlow(scene: DevopsScene, source: CloudNode, target: CloudNode, color: str = DEFAULT_TRAFFIC_COLOR) -> Animation:
@@ -104,6 +104,12 @@ def ScaleOutAction(scene: DevopsScene, cluster: NodeCluster, new_child: CloudNod
     
     # Prepare the organic spawner animation
     animations = [GrowFromCenter(new_child)]
+    
+    # Add text label below the new node (matching render_topology behavior)
+    label = Text(new_child.label or new_child.node_id, font_size=LABEL_FONT_SIZE)
+    label.next_to(new_child, direction=[0, -1, 0])
+    label.set_z_index(Z_NODE)
+    animations.append(Create(label))
     
     # 4. Organic Networking (Draw dynamic line to target)
     if target:
