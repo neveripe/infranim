@@ -38,7 +38,7 @@ note right of LayoutEngine::compute_coordinates
   3. Passes them to `_apply_manim_scaling()`.
 end note
 
-note bottom of LayoutEngine::_apply_manim_scaling
+note bottom of LayoutEngine
   Multiplies the normalized X and Y coordinates
   by `scale_factor` so the nodes fill the 
   Manim camera frame (usually 14x8 units) 
