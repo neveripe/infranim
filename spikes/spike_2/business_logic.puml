@@ -25,12 +25,12 @@ package "manim_devops.layout" {
 
 }
 
-note right of manim_devops.layout.GraphModel::get_networkx_graph
+note right of GraphModel::get_networkx_graph
   Converts our internal representation 
   into a pure NetworkX DiGraph object.
 end note
 
-note right of manim_devops.layout.LayoutEngine::compute_coordinates
+note right of LayoutEngine::compute_coordinates
   1. Requests `nx.multipartite_layout` or `nx.spring_layout`
      from the NetworkX graph.
   2. NetworkX returns normalized coordinates 
@@ -38,7 +38,7 @@ note right of manim_devops.layout.LayoutEngine::compute_coordinates
   3. Passes them to `_apply_manim_scaling()`.
 end note
 
-note bottom of manim_devops.layout.LayoutEngine::_apply_manim_scaling
+note bottom of LayoutEngine::_apply_manim_scaling
   Multiplies the normalized X and Y coordinates
   by `scale_factor` so the nodes fill the 
   Manim camera frame (usually 14x8 units) 
@@ -46,6 +46,6 @@ note bottom of manim_devops.layout.LayoutEngine::_apply_manim_scaling
   Returns { node_id: (scaled_x, scaled_y, 0) }
 end note
 
-manim_devops.layout.GraphModel <.. manim_devops.layout.LayoutEngine : consumes
+GraphModel <.. LayoutEngine : consumes
 
 @enduml

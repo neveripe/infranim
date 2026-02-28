@@ -26,19 +26,19 @@ package "manim_devops.assets" {
 
 }
 
-note right of manim_devops.assets.SVGPreprocessor::sanitize_svg_for_manim
+note right of SVGPreprocessor::sanitize_svg_for_manim
   1. Reads original SVG.
   2. Strips `<style>` blocks and `<defs>` if Manim incompatible.
   3. Writes cleaned SVG to a temporary directory.
   4. Returns the path to the cleaned SVG.
 end note
 
-note right of manim_devops.assets.DevopsSVGMobject::render
+note right of DevopsSVGMobject::render
   Passes the sanitized_filepath into 
   Manim's native SVGMobject class.
   Returns a valid rendering object.
 end note
 
-manim_devops.assets.SVGPreprocessor <.. manim_devops.assets.DevopsSVGMobject : uses
+SVGPreprocessor <.. DevopsSVGMobject : uses
 
 @enduml

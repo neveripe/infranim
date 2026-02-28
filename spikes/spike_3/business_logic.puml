@@ -25,23 +25,23 @@ package "manim_devops.routing" {
 
 }
 
-note right of manim_devops.routing.EdgeRouter::compute_path
+note right of EdgeRouter::compute_path
   1. Takes the center coordinates of two nodes.
   2. Calculates points on the edge of the nodes based on radii.
   3. Returns a list of coordinates representing the path.
 end note
 
-note right of manim_devops.routing.EdgeRouter::_calculate_orthogonal_path
+note right of EdgeRouter::_calculate_orthogonal_path
   Internal method that creates a 90-degree 
   Manhattan/orthogonal routing path between
   two points instead of a direct diagonal line.
 end note
 
-note right of manim_devops.routing.DevopsLine::render
+note right of DevopsLine::render
   Uses EdgeRouter to get the waypoints.
   Draws a Manim path (VMobject) using those waypoints.
 end note
 
-manim_devops.routing.EdgeRouter <.. manim_devops.routing.DevopsLine : consumes
+EdgeRouter <.. DevopsLine : consumes
 
 @enduml
