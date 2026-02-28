@@ -13,18 +13,18 @@ def test_animated_diagram_manages_global_state_IMMUTABLE():
     import manim_devops.adapter as adapter_module
     
     # 1. State should be uninitialized initially
-    assert adapter_module._ACTIVE_DIAGRAM is None
+    assert adapter_module._ACTIVE_DIAGRAM.get() is None
     
     with AnimatedDiagram("Test Architecture", skip_render=True) as diag:
         # 2. Assert Global Injection
-        assert adapter_module._ACTIVE_DIAGRAM is diag
+        assert adapter_module._ACTIVE_DIAGRAM.get() is diag
         
         # 3. Assert internal topological instantiation
         assert isinstance(diag.topology, Topology)
         assert diag.name == "Test Architecture"
         
     # 4. Assert Tear Down (Critical for testing environments)
-    assert adapter_module._ACTIVE_DIAGRAM is None
+    assert adapter_module._ACTIVE_DIAGRAM.get() is None
 
 def test_animated_diagram_cleans_up_on_exception_IMMUTABLE():
     """
@@ -37,13 +37,13 @@ def test_animated_diagram_cleans_up_on_exception_IMMUTABLE():
     
     try:
         with AnimatedDiagram("Crash Test", skip_render=True):
-            assert adapter_module._ACTIVE_DIAGRAM is not None
+            assert adapter_module._ACTIVE_DIAGRAM.get() is not None
             raise ValueError("Simulated User Code Failure")
     except ValueError:
         pass # Catch the expected error
         
     # Memory leak check
-    assert adapter_module._ACTIVE_DIAGRAM is None
+    assert adapter_module._ACTIVE_DIAGRAM.get() is None
 
 def test_cloudnode_rshift_builds_edges_in_active_diagram_IMMUTABLE():
     """
