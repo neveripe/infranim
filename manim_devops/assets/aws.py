@@ -2,6 +2,7 @@ from pathlib import Path
 import logging
 from manim import SVGMobject
 from manim_devops.assets import CloudNode
+from manim_devops.constants import FALLBACK_CIRCLE_RADIUS, AWS_FALLBACK_COLOR
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class AWSNode(CloudNode, SVGMobject):
     def _apply_fallback(self):
         """Replaces this node's geometry with a generic colored circle."""
         from manim import Circle
-        self.become(Circle(radius=0.5, color="#FF9900", fill_opacity=0.2))
+        self.become(Circle(radius=FALLBACK_CIRCLE_RADIUS, color=AWS_FALLBACK_COLOR, fill_opacity=0.2))
 
 
 class EC2(AWSNode):

@@ -1,7 +1,11 @@
+import contextvars
 from manim_devops.core import Topology
+from manim_devops.constants import ADAPTER_SCALE_FACTOR
 
-# Global state tracker for the currently active Diagram context
-_ACTIVE_DIAGRAM = None
+# Thread-safe and asyncio-safe context variable (replaces module-global)
+_ACTIVE_DIAGRAM: contextvars.ContextVar['AnimatedDiagram'] = contextvars.ContextVar(
+    '_ACTIVE_DIAGRAM', default=None
+)
 
 class AnimatedDiagram:
     """
@@ -12,24 +16,24 @@ class AnimatedDiagram:
     def __init__(self, name: str = "Animated Infrastructure", skip_render: bool = False):
         self.name = name
         self.skip_render = skip_render
-        self.topology = Topology(scale_factor=4.0)
+        self.topology = Topology(scale_factor=ADAPTER_SCALE_FACTOR)
+        self._context_token = None
         
     def __enter__(self):
         """
-        Injects this diagram instance into the global module state so 
+        Injects this diagram instance into the context-local state so 
         child CloudNodes can discover it automatically.
         """
-        global _ACTIVE_DIAGRAM
-        _ACTIVE_DIAGRAM = self
+        self._context_token = _ACTIVE_DIAGRAM.set(self)
         return self
         
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Tears down the global state to prevent pollution and handles 
+        Tears down the context state to prevent pollution and handles 
         the programmatic rendering trigger if no exceptions occurred.
         """
-        global _ACTIVE_DIAGRAM
-        _ACTIVE_DIAGRAM = None
+        _ACTIVE_DIAGRAM.reset(self._context_token)
+        self._context_token = None
         
         # If an exception happened inside the `with` block, abort rendering
         if exc_type is not None:

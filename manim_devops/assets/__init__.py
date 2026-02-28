@@ -1,9 +1,9 @@
 from typing import Optional
 
-class CloudNode:
+class GraphEntity:
     """
-    Agnostic mathematical representation of a node in the architecture graph.
-    It holds an ID and eventually coordinates, but does not know how to draw itself.
+    Pure identity for any object in the topology graph.
+    Has an ID and label, and supports operator overloads for edge creation.
     """
     def __init__(self, node_id: str, label: Optional[str] = None):
         self.node_id = node_id
@@ -15,7 +15,7 @@ class CloudNode:
         Registers nodes and edges into the globally active AnimatedDiagram.
         """
         import manim_devops.adapter as adapter
-        diagram = adapter._ACTIVE_DIAGRAM
+        diagram = adapter._ACTIVE_DIAGRAM.get()
         if diagram is None:
             raise RuntimeError(
                 f"CloudNodes can only be connected via `{operator_symbol}` inside an active "
@@ -38,3 +38,11 @@ class CloudNode:
     def __sub__(self, target):
         """Intercepts `node_a - node_b`. Bi-directional edge."""
         return self._connect_via_adapter(target, "-", [(self, target), (target, self)])
+
+class CloudNode(GraphEntity):
+    """
+    A renderable entity in the architecture graph.
+    Distinguished from GraphEntity for isinstance checks in the rendering pipeline.
+    """
+    def __init__(self, node_id: str, label: Optional[str] = None):
+        super().__init__(node_id, label)

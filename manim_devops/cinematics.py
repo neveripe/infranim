@@ -2,8 +2,12 @@ from manim import Animation, Succession, AnimationGroup, MoveAlongPath, Indicate
 from manim_devops.core import DevopsScene, NodeCluster
 from manim_devops.assets import CloudNode
 from manim_devops.layout import OrthogonalRouter
+from manim_devops.constants import (
+    Z_PACKET, Z_EDGE, PACKET_RADIUS, PULSE_SCALE_FACTOR,
+    SCALE_OUT_NODE_RADIUS, EDGE_COLOR, DEFAULT_TRAFFIC_COLOR,
+)
 
-def TrafficFlow(scene: DevopsScene, source: CloudNode, target: CloudNode, color: str = "#00FF00") -> Animation:
+def TrafficFlow(scene: DevopsScene, source: CloudNode, target: CloudNode, color: str = DEFAULT_TRAFFIC_COLOR) -> Animation:
     """
     Constructs a cinematic animation sequence representing abstract data 
     flowing between two architected nodes.
@@ -29,9 +33,9 @@ def TrafficFlow(scene: DevopsScene, source: CloudNode, target: CloudNode, color:
         raise KeyError(f"TrafficFlow Error: No rendered edge found between '{src_id}' and '{tgt_id}'")
         
     # 2. Spawn the Abstract Packet
-    packet = Dot(color=color, radius=0.1)
-    # Packets must explicitly route on top of lines (0) but below Nodes (10)
-    packet.set_z_index(5) 
+    packet = Dot(color=color, radius=PACKET_RADIUS)
+    # Packets render on top of lines but below nodes
+    packet.set_z_index(Z_PACKET) 
     
     # 3. Construct the Path Animation
     # If the user asked for B->A, but the math line is A->B, we must reverse the vector sequence.
@@ -56,7 +60,7 @@ def TrafficFlow(scene: DevopsScene, source: CloudNode, target: CloudNode, color:
     # Fallback to flashing the abstract point if the Mobject somehow wasn't drawn
     flash_target = target_mobject if target_mobject else packet
     
-    pulse_anim = Indicate(flash_target, scale_factor=1.2, color=color)
+    pulse_anim = Indicate(flash_target, scale_factor=PULSE_SCALE_FACTOR, color=color)
     
     # 5. Cleanup
     cleanup_anim = FadeOut(packet)
@@ -77,6 +81,10 @@ def ScaleOutAction(scene: DevopsScene, cluster: NodeCluster, new_child: CloudNod
     # 1. State Mutation: Append Child mathematically
     cluster.add_child(new_child)
     
+    # 1b. Sync to source Topology to prevent split-brain state divergence (Finding 04)
+    if hasattr(scene, 'topology'):
+        scene.topology.add_node(new_child)
+    
     # 2. Calculate New Geographic Center Offset
     if cluster.node_id not in scene.rendered_coords:
         raise KeyError(f"ScaleOutAction Error: NodeCluster '{cluster.node_id}' not found in Scene memory.")
@@ -92,7 +100,6 @@ def ScaleOutAction(scene: DevopsScene, cluster: NodeCluster, new_child: CloudNod
     new_child.move_to(new_coord)
     
     # 3. State Registration: Inject into global mobjects array so TrafficFlow can find it
-    # We use append safely since we mocked it in tests, or it exists natively in Manim 
     scene.mobjects.append(new_child)
     
     # Prepare the organic spawner animation
@@ -106,21 +113,23 @@ def ScaleOutAction(scene: DevopsScene, cluster: NodeCluster, new_child: CloudNod
         target_coord = scene.rendered_coords[target.node_id]
         
         router = OrthogonalRouter()
-        # Mathematically calculate the new 90 degree safe route using the raw tuples
         waypoints = router.compute_path(
             new_coord,
             target_coord,
-            source_radius=0.5,
-            target_radius=0.5
+            source_radius=SCALE_OUT_NODE_RADIUS,
+            target_radius=SCALE_OUT_NODE_RADIUS
         )
         
-        line = VMobject(color="#FFFFFF")
+        line = VMobject(color=EDGE_COLOR)
         line.set_points_as_corners(waypoints)
-        line.set_z_index(0) 
+        line.set_z_index(Z_EDGE) 
         
-        # State Registration: We must store this new line before returning, 
-        # so Phase 3 animations spawned immediately after this function call succeed.
+        # State Registration: store edge for future TrafficFlow animations
         scene.rendered_edges[(new_child.node_id, target.node_id)] = line
+        
+        # 4b. Sync edge to source Topology (Finding 04)
+        if hasattr(scene, 'topology'):
+            scene.topology.connect(new_child, target)
         
         # Add the line drawing to the unified cinematic sequence
         animations.append(Create(line))
