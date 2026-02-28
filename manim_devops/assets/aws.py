@@ -1,9 +1,12 @@
 from pathlib import Path
+import logging
 from manim import SVGMobject
 from manim_devops.assets import CloudNode
 
-# The absolute path to the bundled official SVG assets
-ASSETS_DIR = Path(__file__).parent / "assets" / "aws"
+logger = logging.getLogger(__name__)
+
+# The path to bundled SVG icon assets
+ASSETS_DIR = Path(__file__).parent / "aws"
 
 class AWSNode(CloudNode, SVGMobject):
     """
@@ -16,18 +19,20 @@ class AWSNode(CloudNode, SVGMobject):
         
         # 2. Initialize Visual Renderer
         svg_path = ASSETS_DIR / svg_filename
-        if not svg_path.exists():
-            # For this PoC, if we haven't downloaded the real SVG yet, 
-            # we fallback to a dummy shape so the engine doesn't crash.
-            # In production, this raises a FileNotFoundError.
-            pass
-            
+        
         try:
             SVGMobject.__init__(self, str(svg_path))
-        except Exception:
-            # Fallback for PoC if SVG isn't present
-            from manim import Circle
-            self.become(Circle(radius=0.5, color="#FF9900", fill_opacity=0.2))
+        except FileNotFoundError:
+            logger.warning("SVG '%s' not found at %s. Using fallback circle for '%s'.", svg_filename, svg_path, node_id)
+            self._apply_fallback()
+        except Exception as e:
+            logger.warning("Failed to parse SVG '%s': %s. Using fallback for '%s'.", svg_filename, e, node_id)
+            self._apply_fallback()
+
+    def _apply_fallback(self):
+        """Replaces this node's geometry with a generic colored circle."""
+        from manim import Circle
+        self.become(Circle(radius=0.5, color="#FF9900", fill_opacity=0.2))
 
 
 class EC2(AWSNode):
