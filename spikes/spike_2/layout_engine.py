@@ -6,16 +6,18 @@ class GraphModel:
     Strictly decouples User definitions from the Layout math.
     """
     def __init__(self):
-        self.nodes = set()
-        self.edges = set()
+        self.nodes = []
+        self.edges = []
 
     def add_node(self, id: str) -> None:
         """Registers a node ID in the graph."""
-        self.nodes.add(id)
+        if id not in self.nodes:
+            self.nodes.append(id)
 
     def add_edge(self, source: str, target: str) -> None:
         """Registers a directed edge from source to target."""
-        self.edges.add((source, target))
+        if (source, target) not in self.edges:
+            self.edges.append((source, target))
 
     def get_networkx_graph(self) -> nx.DiGraph:
         """Compiles the internal model into a pure NetworkX Directed Graph."""
