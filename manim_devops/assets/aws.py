@@ -23,6 +23,10 @@ class AWSNode(CloudNode, SVGMobject):
         
         try:
             SVGMobject.__init__(self, str(svg_path))
+            self.scale(0.5)
+            # Ensure internal SVG elements stack correctly (last element on top)
+            for i, submob in enumerate(self.submobjects):
+                submob.set_z_index(i)
         except FileNotFoundError:
             logger.warning("SVG '%s' not found at %s. Using fallback circle for '%s'.", svg_filename, svg_path, node_id)
             self._apply_fallback()

@@ -1,8 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="6" y="12" width="52" height="40" rx="4" fill="#8C4FFF" opacity="0.15" stroke="#8C4FFF" stroke-width="2"/>
-  <line x1="32" y1="12" x2="32" y2="52" stroke="#8C4FFF" stroke-width="1.5"/>
-  <polygon points="20,28 32,20 44,28" fill="none" stroke="#8C4FFF" stroke-width="1.5"/>
-  <polygon points="20,44 32,36 44,44" fill="none" stroke="#8C4FFF" stroke-width="1.5"/>
-  <circle cx="16" cy="32" r="3" fill="#8C4FFF" opacity="0.5"/>
-  <circle cx="48" cy="32" r="3" fill="#8C4FFF" opacity="0.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <rect x="8" y="14" width="64" height="52" rx="6" fill="#8C4FFF" fill-opacity="0.15" stroke="#8C4FFF" stroke-width="3"/>
+  <line x1="40" y1="14" x2="40" y2="66" stroke="#8C4FFF" stroke-width="3"/>
+  <polygon points="24,45 40,25 56,45" fill="none" stroke="#8C4FFF" stroke-width="3"/>
+  <circle cx="20" cy="40" r="5" fill="#8C4FFF"/>
+  <circle cx="60" cy="40" r="5" fill="#8C4FFF"/>
 </svg>
