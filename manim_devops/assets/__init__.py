@@ -9,59 +9,32 @@ class CloudNode:
         self.node_id = node_id
         self.label = label
 
-    def __rshift__(self, target):
+    def _connect_via_adapter(self, target, operator_symbol, edges):
         """
-        Intercepts the `node_a >> node_b` syntax to seamlessly build topology edges
-        inside a globally active AnimatedDiagram context.
+        Shared logic for all operator overloads (>>, <<, -).
+        Registers nodes and edges into the globally active AnimatedDiagram.
         """
         import manim_devops.adapter as adapter
         diagram = adapter._ACTIVE_DIAGRAM
-        
         if diagram is None:
             raise RuntimeError(
-                "CloudNodes can only be connected via `>>` inside an active "
-                "`with AnimatedDiagram():` context block."
+                f"CloudNodes can only be connected via `{operator_symbol}` inside an active "
+                f"`with AnimatedDiagram():` context block."
             )
-            
-        # Register both nodes incase they were instantiated inline
         diagram.topology.add_node(self)
         diagram.topology.add_node(target)
-        
-        # Register the directional edge mathematically
-        diagram.topology.connect(self, target)
-        
-        # Return the target to support chaining syntax `a >> b >> c`
+        for src, tgt in edges:
+            diagram.topology.connect(src, tgt)
         return target
-        
+
+    def __rshift__(self, target):
+        """Intercepts `node_a >> node_b`. Forward directional edge."""
+        return self._connect_via_adapter(target, ">>", [(self, target)])
+
     def __lshift__(self, target):
-        """
-        Intercepts the `node_a << node_b` syntax. Reverses the topological connection.
-        """
-        import manim_devops.adapter as adapter
-        diagram = adapter._ACTIVE_DIAGRAM
-        if diagram is None:
-            raise RuntimeError("CloudNodes can only be connected via `<<` inside an active `with AnimatedDiagram():` context block.")
-            
-        diagram.topology.add_node(self)
-        diagram.topology.add_node(target)
-        
-        # Reverse edge `target` -> `self`
-        diagram.topology.connect(target, self)
-        return target
-        
+        """Intercepts `node_a << node_b`. Reverse directional edge."""
+        return self._connect_via_adapter(target, "<<", [(target, self)])
+
     def __sub__(self, target):
-        """
-        Intercepts the `node_a - node_b` syntax. Creates a bi-directional edge.
-        """
-        import manim_devops.adapter as adapter
-        diagram = adapter._ACTIVE_DIAGRAM
-        if diagram is None:
-            raise RuntimeError("CloudNodes can only be connected via `-` inside an active `with AnimatedDiagram():` context block.")
-            
-        diagram.topology.add_node(self)
-        diagram.topology.add_node(target)
-        
-        # Bi-directional edge
-        diagram.topology.connect(self, target)
-        diagram.topology.connect(target, self)
-        return target
+        """Intercepts `node_a - node_b`. Bi-directional edge."""
+        return self._connect_via_adapter(target, "-", [(self, target), (target, self)])
