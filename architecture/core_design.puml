@@ -1,0 +1,62 @@
+@startuml core_design
+
+title manim-devops: Core Library Architecture
+
+skinparam componentStyle rectangle
+
+package "Base Manim Engine" {
+    [Scene] as ManimScene
+    [SVGMobject] as SVGMobject
+    [VMobject] as VMobject
+    [Animation] as ManimAnimation
+}
+
+package "manim_devops" {
+    
+    package "Core" {
+        [DevopsScene] as DevopsScene
+        [Topology] as Topology
+    }
+
+    package "Layout & Routing" {
+        [GraphLayoutEngine] as LayoutEngine
+        [OrthogonalRouter] as Router
+    }
+
+    package "Assets" {
+        [SVGSanitizer] as Sanitizer
+        [CloudNode] as CloudNode
+    }
+
+    package "Cinematics" {
+        [TrafficFlow] as TrafficFlow
+        [ArchitectureState] as ArchState
+    }
+}
+
+' User Interaction
+actor User
+User --> DevopsScene : Defines topology\nand triggers animations
+
+' Core relationships
+DevopsScene *-- Topology : contains
+DevopsScene --> LayoutEngine : requests coordinates
+Topology "1" *-- "many" CloudNode : tracks
+
+' Layout relationships
+LayoutEngine --> Router : bounds mapping
+Router --> CloudNode : reads dimensions
+CloudNode --> Sanitizer : pre-processes SVGs
+
+' Cinematic relationships
+DevopsScene ..> TrafficFlow : plays
+TrafficFlow --> Router : gets path
+ArchState --> LayoutEngine : triggers recalculation
+
+' Manim Integration
+DevopsScene --|> ManimScene : inherits
+CloudNode --|> SVGMobject : inherits/wraps
+TrafficFlow --|> ManimAnimation : inherits
+Router ..> VMobject : yields (Lines)
+
+@enduml
