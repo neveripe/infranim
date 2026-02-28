@@ -1,0 +1,51 @@
+@startuml spike_2_business_logic
+
+title Spike 2: NetworkX to Manim Layout Engine
+
+skinparam BoxPadding 10
+
+package "manim_devops.layout" {
+    
+    class GraphModel {
+        + dict nodes
+        + list edges
+        __
+        + add_node(id: string) : void
+        + add_edge(source: string, target: string) : void
+        + get_networkx_graph() : nx.DiGraph
+    }
+
+    class LayoutEngine {
+        + float scale_factor
+        __
+        + __init__(scale_factor: float = 3.0)
+        + compute_coordinates(graph: GraphModel) : dict
+        - _apply_manim_scaling(nx_coords: dict) : dict
+    }
+
+}
+
+note right of GraphModel::get_networkx_graph
+  Converts our internal representation 
+  into a pure NetworkX DiGraph object.
+end note
+
+note right of LayoutEngine::compute_coordinates
+  1. Requests `nx.multipartite_layout` or `nx.spring_layout`
+     from the NetworkX graph.
+  2. NetworkX returns normalized coordinates 
+     (e.g., between -1.0 and 1.0).
+  3. Passes them to `_apply_manim_scaling()`.
+end note
+
+note bottom of LayoutEngine::_apply_manim_scaling
+  Multiplies the normalized X and Y coordinates
+  by `scale_factor` so the nodes fill the 
+  Manim camera frame (usually 14x8 units) 
+  instead of clumping in the center.
+  Returns { node_id: (scaled_x, scaled_y, 0) }
+end note
+
+GraphModel <.. LayoutEngine : consumes
+
+@enduml
