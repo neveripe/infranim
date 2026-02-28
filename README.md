@@ -96,6 +96,10 @@ manim_devops/
     └── aws/         # Bundled SVG icons
 ```
 
+## Authorship
+
+This project was written entirely by AI — **Google Gemini** (architecture &amp; implementation) and **Anthropic Claude** (code review &amp; refactoring) — with human guidance. The code has not been formally reviewed by a human engineer. See [DEVELOPMENT.md](DEVELOPMENT.md) for details.
+
 ## License
 
 BSD 2-Clause — see [LICENSE](LICENSE).

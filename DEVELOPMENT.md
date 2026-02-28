@@ -1,5 +1,7 @@
 # Development Process Docs
 
+> **Authorship Disclosure:** All code and documentation in this repository was written by two AI agents — **Google Gemini** (architecture, implementation, TDD) and **Anthropic Claude** (code review, bug fixes, refactoring) — under the guidance of a human orchestrator. The code has not been formally reviewed by a human engineer.
+
 This project was built collaboratively by two AI agents — **Gemini** and **Claude** — with a human orchestrator. These folders document the internal development process:
 
 | Folder | What's Inside |
