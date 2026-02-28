@@ -1,5 +1,4 @@
 import networkx as nx
-import numpy as np
 from typing import List, Tuple
 from manim import Scene, VMobject, Create, Text, GrowFromCenter
 from manim_devops.assets import GraphEntity, CloudNode
@@ -29,13 +28,18 @@ class NodeCluster(GraphEntity):
             
     def resolve_child_coordinates(self, center: tuple[float, float, float]) -> dict[str, tuple[float, float, float]]:
         """
-        Calculates simple horizontal grid offsets for children relative to the center.
+        Calculates horizontal offsets for children relative to the center.
+        Dynamically supports any number of children by spacing them evenly.
         """
         coords = {}
-        # Simple algorithm: offset by X=1.0, alternating left and right
-        offsets = [-1.0, 1.0, -2.0, 2.0, -3.0, 3.0] 
+        n = len(self.children)
+        if n == 0:
+            return coords
+        
+        spacing = 1.0
+        # Center the children: offsets go from -(n-1)/2 to +(n-1)/2
         for i, child in enumerate(self.children):
-            offset_x = offsets[i % len(offsets)]
+            offset_x = (i - (n - 1) / 2) * spacing
             coords[child.node_id] = (center[0] + offset_x, center[1], center[2])
         return coords
 
@@ -45,13 +49,13 @@ class Topology:
     Calculates layouts utilizing NetworkX.
     """
     def __init__(self, scale_factor: float = DEFAULT_SCALE_FACTOR):
-        self._nodes: dict[str, CloudNode] = {}
+        self._nodes: dict[str, GraphEntity] = {}
         self._edges: set[tuple[str, str]] = set()
         self._edge_order: list[tuple[str, str]] = []  # preserve draw order
         self.scale_factor = scale_factor
 
     @property
-    def nodes(self) -> list[CloudNode]:
+    def nodes(self) -> list[GraphEntity]:
         """Public API — returns nodes in insertion order."""
         return list(self._nodes.values())
 
@@ -60,15 +64,15 @@ class Topology:
         """Public API — returns edges in insertion order."""
         return list(self._edge_order)
 
-    def add_node(self, node: CloudNode) -> None:
+    def add_node(self, node: GraphEntity) -> None:
         if node.node_id not in self._nodes:
             self._nodes[node.node_id] = node
 
-    def add_nodes(self, nodes: list[CloudNode]) -> None:
+    def add_nodes(self, nodes: list[GraphEntity]) -> None:
         for node in nodes:
             self.add_node(node)
 
-    def connect(self, source: CloudNode, target: CloudNode) -> None:
+    def connect(self, source: GraphEntity, target: GraphEntity) -> None:
         edge = (source.node_id, target.node_id)
         if edge not in self._edges:
             self._edges.add(edge)

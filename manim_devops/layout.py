@@ -5,8 +5,8 @@ class OrthogonalRouter:
     Handles the mathematical logic for generating 90-degree orthogonal paths 
     between two coordinates, ensuring lines project off the boundary radius.
     """
-    def __init__(self, corner_radius: float = 0.2):
-        self.corner_radius = corner_radius
+    def __init__(self):
+        pass
 
     def compute_path(self, source_center: np.ndarray, target_center: np.ndarray, source_radius: float, target_radius: float) -> list[np.ndarray]:
         """

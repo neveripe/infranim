@@ -89,12 +89,13 @@ def test_topology_calculates_cluster_and_child_coordinates_IMMUTABLE():
     assert "web2" in manim_coords
     
     # Explicit deterministic offset tests
+    # With 2 children centered: offsets are -0.5 and +0.5
     # Child 1 should be offset to the left of centroid
-    assert manim_coords["web1"][0] == cluster_x - 1.0  
+    assert manim_coords["web1"][0] == cluster_x - 0.5  
     assert manim_coords["web1"][1] == cluster_y
     
     # Child 2 should be offset to the right of centroid 
-    assert manim_coords["web2"][0] == cluster_x + 1.0
+    assert manim_coords["web2"][0] == cluster_x + 0.5
     assert manim_coords["web2"][1] == cluster_y
 
 def test_devops_scene_stores_edge_memory_IMMUTABLE():

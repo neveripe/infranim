@@ -9,9 +9,13 @@ _ACTIVE_DIAGRAM: contextvars.ContextVar['AnimatedDiagram'] = contextvars.Context
 
 class AnimatedDiagram:
     """
-    A Context Manager designed to mimic the popular `diagrams` python library API.
-    Any CloudNodes instantiated within the `with AnimatedDiagram():` block will 
-    automatically be harvested, routed, and optionally rendered via Manim upon exit.
+    A Context Manager that mimics the `diagrams` python library API.
+    CloudNodes connected via ``>>``, ``<<``, or ``-`` operators inside the
+    ``with`` block are added to an internal Topology and rendered as a Manim
+    video on exit.
+    
+    Note: Nodes are NOT auto-harvested by instantiation alone — they must
+    be connected via an operator to appear in the output.
     """
     def __init__(self, name: str = "Animated Infrastructure", skip_render: bool = False):
         self.name = name

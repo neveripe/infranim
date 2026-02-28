@@ -21,6 +21,12 @@ def TrafficFlow(scene: DevopsScene, source: CloudNode, target: CloudNode, color:
     src_id = source.node_id
     tgt_id = target.node_id
     
+    if not hasattr(scene, 'rendered_edges'):
+        raise RuntimeError(
+            "TrafficFlow requires a rendered topology. "
+            "Call scene.render_topology(topo) before using TrafficFlow."
+        )
+    
     # 1. Edge Lookup & Reverse Path Resolution
     is_reversed = False
     
@@ -80,6 +86,12 @@ def ScaleOutAction(scene: DevopsScene, cluster: NodeCluster, new_child: CloudNod
     """
     # 1. State Mutation: Append Child mathematically
     cluster.add_child(new_child)
+    
+    if not hasattr(scene, 'rendered_coords'):
+        raise RuntimeError(
+            "ScaleOutAction requires a rendered topology. "
+            "Call scene.render_topology(topo) before using ScaleOutAction."
+        )
     
     # 1b. Sync to source Topology to prevent split-brain state divergence (Finding 04)
     if hasattr(scene, 'topology'):

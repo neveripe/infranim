@@ -198,9 +198,8 @@ def test_scale_out_action_mutates_state_and_returns_animation_IMMUTABLE():
         assert isinstance(action, AnimationGroup)
         
         # 2. Assert Sub-Graph Math Coordinates Offset was calculated
-        # The offset formula uses [-1.0...] for the first child
-        # so X should be -1.0 relative to Cluster [0, 0, 0]
-        assert new_ec2.get_center()[0] == -1.0
+        # With 1 child, centered offset puts it at 0.0 relative to Cluster [0, 0, 0]
+        assert new_ec2.get_center()[0] == 0.0
         
         # 3. Assert Mobject Global Tracker Update
         assert new_ec2 in scene.mobjects
